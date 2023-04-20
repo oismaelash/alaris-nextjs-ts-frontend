@@ -9,6 +9,8 @@ import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import Orders from '@/components/OrderList';
 import Plans from '@/components/PlanList';
+import api from '@/services/api';
+import { Order } from '@/types';
 
 function Copyright(props: any) {
   return (
@@ -87,7 +89,19 @@ const footers = [
   },
 ];
 
-function PricingContent() {
+function Admin() {
+
+  const [orders, setOrders] = React.useState<Array<Order>>([])
+
+  React.useEffect(() => {
+    getOrderData()
+  }, [])
+
+  async function getOrderData(){
+    const response = (await api.get<Array<Order>>('order')).data
+    setOrders(response)
+  }
+
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -111,16 +125,16 @@ function PricingContent() {
         </Toolbar>
       </AppBar>
       {/* Hero unit */}
-      <Container disableGutters maxWidth="md" component="main" sx={{ pt: 8, pb: 6 }}>
+      <Container disableGutters maxWidth="xl" component="main" sx={{ pt: 8, pb: 6 }}>
         <Plans title="Plans" />
       </Container>
-      <Container disableGutters maxWidth="md" component="main" sx={{ pt: 8, pb: 6 }}>
-        <Orders title="Orders" />
+      <Container disableGutters maxWidth="xl" component="main" sx={{ pt: 8, pb: 6 }}>
+        <Orders title="Orders" rows={orders} />
       </Container>
     </React.Fragment>
   );
 }
 
 export default function Pricing() {
-  return <PricingContent />;
+  return <Admin />;
 }

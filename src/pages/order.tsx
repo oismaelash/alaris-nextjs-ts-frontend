@@ -1,44 +1,58 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import api from '@/services/api';
+import { Order } from '@/types';
 const theme = createTheme();
 
-export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+export default function Order() {
+  const [status, setStatus] = React.useState('IN PROGRESS');
+  const [order, setOrder] = React.useState<Order>({})
+  
+  React.useEffect(() => {
+    var url = new URL(window.location.href);
+    var id = url.searchParams.get("id");
+
+    if (id) {
+      getData(id)
+    } else {
+      window.location.href = '/admin'
+    }
+  }, [])
+
+  function handleChange(event: SelectChangeEvent) {
+    setStatus(event.target.value as string);
   };
+
+  async function handleUpdate() {
+    const payload: Order = {...order, status: status}
+    await api.put(`order?id=${order.id}`, payload)
+    window.location.href = '/admin'
+  };
+
+  async function getData(id: string) {
+    const response = (await api.get<Array<Order>>('order')).data
+    const orderResponse: Order = response.filter(order => order.id.toString() === id)[0]
+    setOrder(orderResponse)
+    setStatus(orderResponse.status)
+  }
+
+  if(!order?.id){
+    return (
+      <h1>Loading...</h1>
+    )
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -59,7 +73,7 @@ export default function SignIn() {
       </AppBar>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        
+
         <Box
           sx={{
             marginTop: 8,
@@ -68,60 +82,79 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Order
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleUpdate} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="id"
+              label="Id"
+              name="id"
+              autoFocus
+              disabled
+              value={order.id}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              autoFocus
+              disabled
+              value={order.name}
+            />
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Email"
               name="email"
               autoComplete="email"
               autoFocus
+              disabled
+              value={order.email}
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              id="phone"
+              label="Phone"
+              name="phone"
+              autoFocus
+              disabled
+              value={order.phone}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+            <FormControl fullWidth>
+              <InputLabel id="status">Age</InputLabel>
+              <Select
+                labelId="status"
+                id="status"
+                value={status}
+                label="Status"
+                onChange={handleChange}
+              >
+                <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
+                <MenuItem value="DONE">DONE</MenuItem>
+              </Select>
+            </FormControl>
             <Button
-              type="submit"
+              onClick={handleUpdate}
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Update
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
+
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );
