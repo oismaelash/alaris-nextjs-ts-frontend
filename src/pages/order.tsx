@@ -24,7 +24,8 @@ export default function Order() {
     email: '',
     id: '',
     phone: '',
-    status: ''
+    status: '',
+    plan: ''
   })
   
   React.useEffect(() => {
