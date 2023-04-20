@@ -4,102 +4,31 @@ import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
 import Orders from '@/components/OrderList';
 import Plans from '@/components/PlanList';
 import api from '@/services/api';
-import { Order } from '@/types';
-
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-const tiers = [
-  {
-    title: 'Free',
-    price: '0',
-    description: [
-      '10 users included',
-      '2 GB of storage',
-      'Help center access',
-      'Email support',
-    ],
-    buttonText: 'Sign up for free',
-    buttonVariant: 'outlined',
-  },
-  {
-    title: 'Pro',
-    subheader: 'Most popular',
-    price: '15',
-    description: [
-      '20 users included',
-      '10 GB of storage',
-      'Help center access',
-      'Priority email support',
-    ],
-    buttonText: 'Get started',
-    buttonVariant: 'contained',
-  },
-  {
-    title: 'Enterprise',
-    price: '30',
-    description: [
-      '50 users included',
-      '30 GB of storage',
-      'Help center access',
-      'Phone & email support',
-    ],
-    buttonText: 'Contact us',
-    buttonVariant: 'outlined',
-  },
-];
-const footers = [
-  {
-    title: 'Company',
-    description: ['Team', 'History', 'Contact us', 'Locations'],
-  },
-  {
-    title: 'Features',
-    description: [
-      'Cool stuff',
-      'Random feature',
-      'Team feature',
-      'Developer stuff',
-      'Another one',
-    ],
-  },
-  {
-    title: 'Resources',
-    description: ['Resource', 'Resource name', 'Another resource', 'Final resource'],
-  },
-  {
-    title: 'Legal',
-    description: ['Privacy policy', 'Terms of use'],
-  },
-];
+import { Order, Plan } from '@/types';
 
 function Admin() {
 
   const [orders, setOrders] = React.useState<Array<Order>>([])
+  const [plans, setPlans] = React.useState<Array<Plan>>([])
 
   React.useEffect(() => {
     getOrderData()
+    getPlanData()
   }, [])
 
   async function getOrderData(){
     const response = (await api.get<Array<Order>>('order')).data
     setOrders(response)
+  }
+
+  async function getPlanData(){
+    const response = (await api.get<Array<Plan>>('plan')).data
+    setPlans(response)
   }
 
   return (
@@ -126,7 +55,7 @@ function Admin() {
       </AppBar>
       {/* Hero unit */}
       <Container disableGutters maxWidth="xl" component="main" sx={{ pt: 8, pb: 6 }}>
-        <Plans title="Plans" />
+        <Plans title="Plans" rows={plans} />
       </Container>
       <Container disableGutters maxWidth="xl" component="main" sx={{ pt: 8, pb: 6 }}>
         <Orders title="Orders" rows={orders} />

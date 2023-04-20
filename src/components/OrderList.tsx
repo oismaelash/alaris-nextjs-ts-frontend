@@ -18,7 +18,7 @@ export default function Orders(props: any) {
   async function onHandleDelete(row: Order) {
     const isDelete = window.confirm('You really about this');
 
-    if(isDelete){
+    if (isDelete) {
       await api.delete<Array<Order>>(`order?id=${row.id}`)
       window.location.reload()
     }
@@ -47,13 +47,13 @@ export default function Orders(props: any) {
               <TableCell>{row.phone}</TableCell>
               <TableCell>{row.status}</TableCell>
               <TableCell align="right">
-              <Button variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={() => onHandleUpdate(row)}>
-                Update
-              </Button>
-              <Button color='error' variant="outlined" sx={{ my: 1, mx: 1.5 }}  onClick={() => onHandleDelete(row)}>
-                Delete
-              </Button>
-             </TableCell>
+                <Button variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={() => onHandleUpdate(row)}>
+                  Update
+                </Button>
+                <Button color='error' variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={() => onHandleDelete(row)}>
+                  Delete
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

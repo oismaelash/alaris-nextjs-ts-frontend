@@ -6,89 +6,58 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Title from './Title';
-// Generate Order Data
-function createData(
-  id: number,
-  date: string,
-  name: string,
-  shipTo: string,
-  paymentMethod: string,
-  amount: number,
-) {
-  return { id, date, name, shipTo, paymentMethod, amount };
-}
-
-const rows = [
-  createData(
-    0,
-    '16 Mar, 2019',
-    'Elvis Presley',
-    'Tupelo, MS',
-    'VISA ⠀•••• 3719',
-    312.44,
-  ),
-  createData(
-    1,
-    '16 Mar, 2019',
-    'Paul McCartney',
-    'London, UK',
-    'VISA ⠀•••• 2574',
-    866.99,
-  ),
-  createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-  createData(
-    3,
-    '16 Mar, 2019',
-    'Michael Jackson',
-    'Gary, IN',
-    'AMEX ⠀•••• 2000',
-    654.39,
-  ),
-  createData(
-    4,
-    '15 Mar, 2019',
-    'Bruce Springsteen',
-    'Long Branch, NJ',
-    'VISA ⠀•••• 5919',
-    212.79,
-  ),
-];
-
-function preventDefault(event: React.MouseEvent) {
-  event.preventDefault();
-}
+import { Plan } from '@/types';
+import api from '@/services/api';
 
 export default function Plans(props: any) {
+
+  function onHandleUpdate(row: Plan) {
+    window.location.href = `plan?id=${row.id}`
+  }
+
+  async function onHandleDelete(row: Plan) {
+    const isDelete = window.confirm('You really about this');
+
+    if (isDelete) {
+      await api.delete<Array<Plan>>(`plan?id=${row.id}`)
+      window.location.reload()
+    }
+  }
+
   return (
     <React.Fragment>
       <Title>{props.title}</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
+            <TableCell>Id</TableCell>
             <TableCell>Name</TableCell>
-            <TableCell>Benefits</TableCell>
-            <TableCell>Contents</TableCell>
+            {/* <TableCell>Benefits</TableCell>
+            <TableCell>Contents</TableCell> */}
             <TableCell>Value</TableCell>
             <TableCell>Terms</TableCell>
+            <TableCell>Featured</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {props.rows.map((row: Plan) => (
             <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
+              <TableCell>{row.id}</TableCell>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
-              <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell>{row.paymentMethod}</TableCell>
+              {/* <TableCell>{row.benefits}</TableCell>
+              <TableCell>{row.contents}</TableCell> */}
+              <TableCell>{row.value}</TableCell>
+              <TableCell>{row.terms}</TableCell>
+              <TableCell>{row.featured ? 'true' : 'false'}</TableCell>
               <TableCell align="right">
-              <Button href="/" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-                Update
-              </Button>
-              <Button href="/" color='error' variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-                Delete
-              </Button>
-             </TableCell>
+                <Button variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={() => onHandleUpdate(row)}>
+                  Update
+                </Button>
+                <Button color='error' variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={() => onHandleDelete(row)}>
+                  Delete
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

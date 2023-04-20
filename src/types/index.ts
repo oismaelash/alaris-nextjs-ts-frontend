@@ -1,6 +1,6 @@
 export type Order = {
     email: string
-    id: number
+    id: string
     name: string
     phone: string
     status: string
@@ -9,8 +9,8 @@ export type Order = {
 export type Plan = {
     benefits: string
     contents: string
-    featured: number
-    id: number
+    featured: string
+    id: string
     name: string
     terms: string
     value: string

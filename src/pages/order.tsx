@@ -17,11 +17,12 @@ import { Order } from '@/types';
 const theme = createTheme();
 
 export default function Order() {
+  const [loading, setLoading] = React.useState(true);
   const [status, setStatus] = React.useState('IN PROGRESS');
   const [order, setOrder] = React.useState<Order>({
     name: '',
     email: '',
-    id: 0,
+    id: '',
     phone: '',
     status: ''
   })
@@ -49,12 +50,13 @@ export default function Order() {
 
   async function getData(id: string) {
     const response = (await api.get<Array<Order>>('order')).data
-    const orderResponse: Order = response.filter(order => order.id.toString() === id)[0]
+    const orderResponse: Order = response.filter(order => order.id == id)[0]
     setOrder(orderResponse)
     setStatus(orderResponse.status)
+    setLoading(false)
   }
 
-  if(!order?.id){
+  if(loading){
     return (
       <h1>Loading...</h1>
     )
@@ -70,14 +72,14 @@ export default function Order() {
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            Admin
+            Order
           </Typography>
           <Button href="/admin" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
             Admin
           </Button>
         </Toolbar>
       </AppBar>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xl">
         <CssBaseline />
 
         <Box
@@ -138,7 +140,7 @@ export default function Order() {
               value={order.phone}
             />
             <FormControl fullWidth>
-              <InputLabel id="status">Age</InputLabel>
+              <InputLabel id="status">Status</InputLabel>
               <Select
                 labelId="status"
                 id="status"
