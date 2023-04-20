@@ -11,88 +11,47 @@ import Grid from '@mui/material/Grid';
 import StarIcon from '@mui/icons-material/StarBorder';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
+import { Plan } from '@/types';
+import api from '@/services/api';
+import { benefitsToArray, contentsToArray } from '@/utils';
+import Backdrop from '@mui/material/Backdrop';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+import GetPlanFOrm from '@/components/GetPlanForm';
 
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+function Index() {
+  const [plans, setPlans] = React.useState<Array<Plan>>([])
+  const [planSelected, setPlanSelected] = React.useState({})
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => setOpen(false);
+  const styleModal = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+  React.useEffect(() => {
+    getPlanData()
+  }, [])
 
-const tiers = [
-  {
-    title: 'Free',
-    price: '0',
-    description: [
-      '10 users included',
-      '2 GB of storage',
-      'Help center access',
-      'Email support',
-    ],
-    buttonText: 'Sign up for free',
-    buttonVariant: 'outlined',
-  },
-  {
-    title: 'Pro',
-    subheader: 'Most popular',
-    price: '15',
-    description: [
-      '20 users included',
-      '10 GB of storage',
-      'Help center access',
-      'Priority email support',
-    ],
-    buttonText: 'Get started',
-    buttonVariant: 'contained',
-  },
-  {
-    title: 'Enterprise',
-    price: '30',
-    description: [
-      '50 users included',
-      '30 GB of storage',
-      'Help center access',
-      'Phone & email support',
-    ],
-    buttonText: 'Contact us',
-    buttonVariant: 'outlined',
-  },
-];
-const footers = [
-  {
-    title: 'Company',
-    description: ['Team', 'History', 'Contact us', 'Locations'],
-  },
-  {
-    title: 'Features',
-    description: [
-      'Cool stuff',
-      'Random feature',
-      'Team feature',
-      'Developer stuff',
-      'Another one',
-    ],
-  },
-  {
-    title: 'Resources',
-    description: ['Resource', 'Resource name', 'Another resource', 'Final resource'],
-  },
-  {
-    title: 'Legal',
-    description: ['Privacy policy', 'Terms of use'],
-  },
-];
+  async function getPlanData(){
+    const response = (await api.get<Array<Plan>>('plan')).data
+    setPlans(response)
+  }
 
-function PricingContent() {
+
+  function handleGetNow(plan: Plan) {
+    setOpen(true)
+    setPlanSelected(plan)
+  }
+
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -127,21 +86,21 @@ function PricingContent() {
       {/* End hero unit */}
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
-          {tiers.map((tier) => (
+          {plans.map((plan) => (
             // Enterprise card is full width at sm breakpoint
             <Grid
               item
-              key={tier.title}
+              key={plan.id}
               xs={12}
-              sm={tier.title === 'Enterprise' ? 12 : 6}
+              sm={6}
               md={4}
             >
               <Card>
                 <CardHeader
-                  title={tier.title}
-                  subheader={tier.subheader}
+                  title={plan.name}
+                  subheader={plan.featured == '1' ? "Most popular" : ""}
                   titleTypographyProps={{ align: 'center' }}
-                  action={tier.title === 'Pro' ? <StarIcon /> : null}
+                  action={plan.featured == '1' ? <StarIcon /> : null}
                   subheaderTypographyProps={{
                     align: 'center',
                   }}
@@ -153,6 +112,34 @@ function PricingContent() {
                   }}
                 />
                 <CardContent>
+                  <ul>
+                    {benefitsToArray(plan.benefits).map((benefit) => (
+                      <Typography
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                        key={benefit}
+                      >
+                        {benefit}
+                      </Typography>
+                    ))}
+                  </ul>
+                  <Typography component="h6" variant="h6" color="text.primary">
+                    Contents:
+                  </Typography>
+                  <ul>
+                    {contentsToArray(plan.contents).map((content, index) => (
+                      <Typography
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                        key={index}
+                      >
+                        <img src={content.iconUrl} width="30" height="30" />
+                        {content.text}
+                      </Typography>
+                    ))}
+                  </ul>
                   <Box
                     sx={{
                       display: 'flex',
@@ -161,38 +148,53 @@ function PricingContent() {
                       mb: 2,
                     }}
                   >
-                    <Typography component="h2" variant="h3" color="text.primary">
-                      ${tier.price}
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      /mo
+                    <Typography component="h5" variant="h5" color="text.primary">
+                      ${plan.value}
                     </Typography>
                   </Box>
-                  <ul>
-                    {tier.description.map((line) => (
-                      <Typography
-                        component="li"
-                        variant="subtitle1"
-                        align="center"
-                        key={line}
-                      >
-                        {line}
-                      </Typography>
-                    ))}
-                  </ul>
                 </CardContent>
                 <CardActions>
                   <Button
                     fullWidth
-                    variant={tier.buttonVariant as 'outlined' | 'contained'}
+                    variant='contained'
+                    onClick={() => handleGetNow(plan)}
                   >
-                    {tier.buttonText}
+                    Get now
+                  </Button>
+                  <Button
+                    fullWidth
+                    variant='text'
+                    onClick={() => window.location.replace(plan.terms)}
+                  >
+                    Terms
                   </Button>
                 </CardActions>
               </Card>
             </Grid>
           ))}
         </Grid>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={open}>
+            <Box sx={styleModal}>
+              <Typography id="transition-modal-title" variant="h6" component="h2">
+                Request Plan
+              </Typography>
+              <GetPlanFOrm plan={planSelected} sended={() => setOpen(false)} />
+            </Box>
+          </Fade>
+        </Modal>
       </Container>
      
     </React.Fragment>
@@ -200,5 +202,5 @@ function PricingContent() {
 }
 
 export default function Pricing() {
-  return <PricingContent />;
+  return <Index />;
 }

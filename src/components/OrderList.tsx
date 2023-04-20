@@ -34,6 +34,7 @@ export default function Orders(props: any) {
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Phone</TableCell>
+            <TableCell>Plan</TableCell>
             <TableCell>Status</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -45,6 +46,7 @@ export default function Orders(props: any) {
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phone}</TableCell>
+              <TableCell>{row.plan}</TableCell>
               <TableCell>{row.status}</TableCell>
               <TableCell align="right">
                 <Button variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={() => onHandleUpdate(row)}>
