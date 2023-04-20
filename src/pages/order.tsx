@@ -140,6 +140,17 @@ export default function Order() {
               disabled
               value={order.phone}
             />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="plan"
+              label="Plan"
+              name="plan"
+              autoFocus
+              disabled
+              value={order.plan}
+            />
             <FormControl fullWidth>
               <InputLabel id="status">Status</InputLabel>
               <Select
