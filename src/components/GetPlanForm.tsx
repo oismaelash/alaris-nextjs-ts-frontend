@@ -69,7 +69,6 @@ export default function GetPlanFOrm(props: any) {
               id="email"
               label="Email"
               name="email"
-              autoFocus
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
@@ -80,7 +79,6 @@ export default function GetPlanFOrm(props: any) {
               id="phone"
               label="Phone"
               name="phone"
-              autoFocus
               value={phone}
               onChange={e => setPhone(e.target.value)}
             />
