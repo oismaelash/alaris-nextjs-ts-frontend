@@ -18,7 +18,13 @@ const theme = createTheme();
 
 export default function Order() {
   const [status, setStatus] = React.useState('IN PROGRESS');
-  const [order, setOrder] = React.useState<Order>({})
+  const [order, setOrder] = React.useState<Order>({
+    name: '',
+    email: '',
+    id: 0,
+    phone: '',
+    status: ''
+  })
   
   React.useEffect(() => {
     var url = new URL(window.location.href);
